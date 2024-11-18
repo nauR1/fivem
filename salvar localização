@@ -1,0 +1,15 @@
+-- Comando para salvar coordenadas
+RegisterCommand("salvarlocal", function(source)
+    local playerPed = GetPlayerPed(source)
+    local coords = GetEntityCoords(playerPed)
+    local message = string.format("Localização salva: x = %.2f, y = %.2f, z = %.2f", coords.x, coords.y, coords.z)
+    
+    -- Envia para o jogador que usou o comando
+    TriggerClientEvent('chat:addMessage', source, {
+        color = {0, 255, 0},
+        args = {"[Localização]", message}
+    })
+    
+    -- Registra no console do servidor
+    print("Jogador " .. GetPlayerName(source) .. " salvou a localização: " .. message)
+end)
