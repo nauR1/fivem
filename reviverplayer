@@ -1,0 +1,44 @@
+-- Comando para reviver um jogador
+RegisterCommand("reviver", function(source, args)
+    if IsPlayerAceAllowed(source, "command.reviver") then
+        local targetId = tonumber(args[1])
+        
+        if targetId and GetPlayerPing(targetId) > 0 then
+            TriggerClientEvent('revivePlayer', targetId)
+            TriggerClientEvent('chat:addMessage', source, {
+                color = {0, 255, 0},
+                args = {"[Sistema]", "Jogador revivido com sucesso!"}
+            })
+        else
+            TriggerClientEvent('chat:addMessage', source, {
+                color = {255, 0, 0},
+                args = {"[Erro]", "ID do jogador inválido."}
+            })
+        end
+    else
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {255, 0, 0},
+            args = {"[Sistema]", "Você não tem permissão para usar este comando."}
+        })
+    end
+end, false)
+
+-- Evento do cliente para reviver o jogador
+RegisterNetEvent('revivePlayer')
+AddEventHandler('revivePlayer', function()
+    local playerPed = PlayerPedId()
+    if IsEntityDead(playerPed) then
+        local playerPos = GetEntityCoords(playerPed)
+        ResurrectPed(playerPed)
+        SetEntityCoords(playerPed, playerPos)
+        SetEntityHealth(playerPed, 200)
+    end
+end)
+
+-- Permissão para usar o comando /reviver
+AddEventHandler('onResourceStart', function(resourceName)
+    if GetCurrentResourceName() ~= resourceName then
+        return
+    end
+    ExecuteCommand("add_ace group.admin command.reviver allow")
+end)
